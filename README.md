@@ -73,7 +73,7 @@ User Input → Topic Validation → Intent Routing
 cd ai_lo
 ```
 
-2. **Set up environment variables**
+2. **Using sample .env, set up your API keys in the environment variables**
 ```bash
 cp sample.env .env
 # Edit .env and add your API keys
@@ -123,7 +123,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-4. **Set up environment variables**
+4. **Using sample .env, set up your API keys in the environment variables**
 ```bash
 cp sample.env .env
 # Edit .env and add your API keys
