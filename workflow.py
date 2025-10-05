@@ -84,7 +84,25 @@ def extract_number(text: str, field_name: str) -> Optional[float]:
 # Node functions
 def validate_topic(state: AgentState) -> AgentState:
     """Check if the question is related to loans/mortgages."""
-    user_input_lower = state["user_input"].lower()
+    user_input = state["user_input"].strip()
+    user_input_lower = user_input.lower()
+
+    greeting_prompt = ChatPromptTemplate.from_messages([
+        ("system", """You are a greeting detector. Determine if the user's message is a greeting (like "hi", "hello", "hey", "good morning", etc.).
+
+        Respond with only 'yes' if it's a greeting, or 'no' if it's not a greeting."""),
+        ("human", "{input}")
+    ])
+
+    greeting_chain = greeting_prompt | llm
+    greeting_result = greeting_chain.invoke({"input": user_input})
+
+    is_greeting = greeting_result.content.strip().lower() == "yes"
+
+    if is_greeting:
+        state["final_response"] = "Hello! 👋 Welcome to AI Loan Officer. I'm here to help you with mortgage and loan-related questions. I can:\n\n• Answer questions about our loan products\n• Explain mortgage requirements and processes\n• Help you start a mortgage application\n\nWhat would you like to know about mortgages today?"
+        state["mode"] = "qa"
+        return state
 
     application_keywords = ["application", "apply", "mortgage", "loan", "rate", "borrow", "finance", "refinance"]
     if any(keyword in user_input_lower for keyword in application_keywords):

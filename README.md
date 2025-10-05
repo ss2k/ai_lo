@@ -62,27 +62,74 @@ User Input → Topic Validation → Intent Routing
 ## Installation
 
 ### Prerequisites
-- Python 3.11+
+- Python 3.11+ OR Docker
 - OpenAI API key
 - (Optional) LangSmith API key for tracing
 
-### Setup
+### Option 1: Docker (Recommended)
 
 1. **Clone the repository**
 ```bash
 cd ai_loan_officer
 ```
 
-2. **Install dependencies**
+2. **Set up environment variables**
+```bash
+cp sample.env .env
+# Edit .env and add your API keys
+```
+
+3. **Load company documents into vector database**
+```bash
+# First time only - run this outside Docker
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python load_data.py
+deactivate
+```
+
+4. **Build and run with Docker**
+```bash
+# Build and start the container
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop the container
+docker-compose down
+```
+
+Navigate to `http://localhost:8501`
+
+**Note**: The `chroma_db/` directory is mounted as a volume, so your vector database persists across container restarts.
+
+### Option 2: Local Python Installation
+
+1. **Clone the repository**
+```bash
+cd ai_loan_officer
+```
+
+2. **Create virtual environment**
+```bash
+python -m venv venv
+source venv/bin/activate
+```
+
+3. **Install dependencies**
 ```bash
 pip install -r requirements.txt
 ```
 
-3. **Set up environment variables**
+4. **Set up environment variables**
+```bash
+cp sample.env .env
+# Edit .env and add your API keys
+```
 
-Copy sample.env file and change it to `.env` and put in the correct credentials.
-
-4. **Load company documents into vector database**
+5. **Load company documents into vector database**
 ```bash
 python load_data.py
 ```
@@ -94,8 +141,7 @@ This will:
 - Store in Chroma vector database at `chroma_db/`
 - Needs to be done only the first time.
 
-## Usage
-
+6. **Run the application**
 ```bash
 streamlit run app.py
 ```
@@ -133,4 +179,65 @@ pytest tests/test_rate_calculator.py
 
 # With verbose output
 pytest -v
+```
+
+## Docker Commands
+
+### Useful Docker Commands
+
+```bash
+# Build the image
+docker-compose build
+
+# Start containers in detached mode
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop containers
+docker-compose down
+
+# Rebuild and restart
+docker-compose up -d --build
+
+# Access container shell
+docker-compose exec ai-loan-officer bash
+
+# View running containers
+docker ps
+
+# Remove all stopped containers and unused images
+docker system prune -a
+```
+
+### Troubleshooting
+
+**Container won't start:**
+```bash
+# Check logs
+docker-compose logs ai-loan-officer
+
+# Check if port 8501 is already in use
+lsof -i :8501  # On macOS/Linux
+netstat -ano | findstr :8501  # On Windows
+```
+
+**Chroma DB issues:**
+```bash
+# Ensure chroma_db directory exists and has correct permissions
+chmod -R 755 chroma_db
+
+# Recreate the vector database
+rm -rf chroma_db/*
+python load_data.py
+```
+
+**Environment variables not loading:**
+```bash
+# Verify .env file exists
+ls -la .env
+
+# Check if variables are set in container
+docker-compose exec ai-loan-officer env | grep OPENAI
 ```
