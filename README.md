@@ -70,7 +70,7 @@ User Input → Topic Validation → Intent Routing
 
 1. **Clone the repository**
 ```bash
-cd ai_loan_officer
+cd ai_lo
 ```
 
 2. **Set up environment variables**
@@ -109,7 +109,7 @@ Navigate to `http://localhost:8501`
 
 1. **Clone the repository**
 ```bash
-cd ai_loan_officer
+cd ai_lo
 ```
 
 2. **Create virtual environment**
